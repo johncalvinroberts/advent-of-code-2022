@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/alecthomas/kong"
+	day01 "github.com/johncalvinroberts/advent-of-code-2022/day/01"
 	"github.com/johncalvinroberts/advent-of-code-2022/utils"
 )
 
@@ -28,7 +29,8 @@ func (cmd *RunCmd) Run() error {
 	case 0:
 		// TODO: run all challenges
 	case 1:
-		// TODO: implement day 1
+		fmt.Printf("part 1: %d\n", day01.Part1(utils.ReadDayFile(cmd.Day)))
+		fmt.Printf("part 2: %d\n", day01.Part2(utils.ReadDayFile(cmd.Day)))
 	}
 	return nil
 }
@@ -48,24 +50,26 @@ func (cmd *ScaffoldCmd) Run() error {
 	defer res.Body.Close()
 	data, err := io.ReadAll(res.Body)
 	utils.PanicOnErr(err)
-	dirname := fmt.Sprintf("day/%02d", cmd.Day)
-	inputFile := fmt.Sprintf("%s/input.txt", dirname)
-	chlgFile := fmt.Sprintf("%s/challenge.go", dirname)
-	testFile := fmt.Sprintf("%s/challenge_test.go", dirname)
-	chlgScaffold := fmt.Sprintf(`package day_%02d
-		
+	var (
+		dirname      = fmt.Sprintf("day/%02d", cmd.Day)
+		inputFile    = fmt.Sprintf("%s/input.txt", dirname)
+		chlgFile     = fmt.Sprintf("%s/challenge.go", dirname)
+		testFile     = fmt.Sprintf("%s/challenge_test.go", dirname)
+		chlgScaffold = fmt.Sprintf(`package day_%02d
+			
 func Part1(input string) {}
-
+	
 func Part2(input string) {}
-`, cmd.Day)
-	testScaffold := fmt.Sprintf(`package day_%02d
+	`, cmd.Day)
+		testScaffold = fmt.Sprintf(`package day_%02d
 import "testing"
 func TestPart1(t *testing.T) {
 	t.Error("Not Implemented")
 }
-
+	
 func TestPart2(t *testing.T) {}
-`, cmd.Day)
+	`, cmd.Day)
+	)
 
 	utils.MakeDir(dirname)
 	utils.WriteFile(inputFile, data)
