@@ -29,5 +29,5 @@ go run main.go run
 #### Run all tests
 
 ```shell
-go test .
+go test ./...
 ```
