@@ -84,11 +84,11 @@ func ExtractIntsToStrSlice(v string) []string {
 	return strs
 }
 
-func Assert(got int, want int, t *testing.T) {
+func Assert[K comparable](got K, want K, t *testing.T) {
 	if got != want {
-		t.Errorf("Expected %d, received %d", want, got)
+		t.Errorf("Expected %v, received %v", want, got)
 	} else {
-		t.Logf("Got %d, want %d. Good job ✨.", got, want)
+		t.Logf("Got %v, want %v. Good job ✨.", got, want)
 	}
 }
 
