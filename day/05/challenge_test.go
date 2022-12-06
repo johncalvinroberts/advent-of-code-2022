@@ -21,4 +21,7 @@ func TestPart1(t *testing.T) {
 	utils.Assert(result, "CMZ", t)
 }
 
-func TestPart2(t *testing.T) {}
+func TestPart2(t *testing.T) {
+	result := Part2(fixture)
+	utils.Assert(result, "MCD", t)
+}

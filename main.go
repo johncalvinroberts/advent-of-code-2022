@@ -46,7 +46,7 @@ func (cmd *RunCmd) Run() error {
 		fmt.Printf("part 2: %d\n", day04.Part2(utils.ReadDayFile(cmd.Day)))
 	case 5:
 		fmt.Printf("part 1: %s\n", day05.Part1(utils.ReadDayFile(cmd.Day)))
-		// fmt.Printf("part 2: %d\n", day05.Part2(utils.ReadDayFile(cmd.Day)))
+		fmt.Printf("part 2: %s\n", day05.Part2(utils.ReadDayFile(cmd.Day)))
 	}
 	return nil
 }
