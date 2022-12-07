@@ -52,4 +52,7 @@ func TestPart1(t *testing.T) {
 	utils.Assert(result, 95437, t)
 }
 
-func TestPart2(t *testing.T) {}
+func TestPart2(t *testing.T) {
+	result := Part2(fixture)
+	utils.Assert(result, 24933642, t)
+}

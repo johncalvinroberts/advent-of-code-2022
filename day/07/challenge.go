@@ -7,6 +7,12 @@ import (
 	"github.com/johncalvinroberts/advent-of-code-2022/utils"
 )
 
+var (
+	nonBloatedThreshold     = 100000
+	totalSystemSize         = 70000000
+	minSpaceNeededForUpdate = 30000000
+)
+
 type FSNode struct {
 	parent   *FSNode
 	children map[string]*FSNode
@@ -28,7 +34,7 @@ func (n *FSNode) GetSize() int {
 }
 
 func (n *FSNode) Insert(size int, name string) {
-	child := NewFsNode()
+	child := NewFSNode()
 	child.size = size
 	child.parent = n
 	n.children[name] = child
@@ -55,19 +61,7 @@ func (n *FSNode) IsDir() bool {
 	return len(n.children) > 0
 }
 
-func (n *FSNode) CalculateTotalBloat() int {
-	var totalBloat int
-	for _, x := range n.children {
-		size := x.GetSize()
-		if x.IsDir() && size < 100000 {
-			totalBloat += size
-		}
-		totalBloat += x.CalculateTotalBloat()
-	}
-	return totalBloat
-}
-
-func NewFsNode() *FSNode {
+func NewFSNode() *FSNode {
 	return &FSNode{
 		children: make(map[string]*FSNode),
 		size:     0,
@@ -78,10 +72,26 @@ func NewFsNode() *FSNode {
 // What is the sum of the total sizes of those directories?
 func Part1(input string) int {
 	var (
-		root        = NewFsNode()
-		currentNode = root
-		lines       = utils.StrToSlice(input, "\n")
+		root  = NewFSNode()
+		lines = utils.StrToSlice(input, "\n")
 	)
+	buildFS(lines, root)
+	totalBloat := calculateTotalBloat(root)
+	return totalBloat
+}
+
+func Part2(input string) int {
+	var (
+		root  = NewFSNode()
+		lines = utils.StrToSlice(input, "\n")
+	)
+	buildFS(lines, root)
+	sizeOfDirToDelete := findSmallestDirAboveThreshold(root, root.GetSize(), root.GetSize())
+	return sizeOfDirToDelete
+}
+
+func buildFS(lines []string, root *FSNode) {
+	currentNode := root
 	for _, line := range lines {
 		parsed := strings.Split(line, " ")
 
@@ -115,9 +125,31 @@ func Part1(input string) int {
 			currentNode.Insert(size, name)
 		}
 	}
-	root.Print(0)
-	totalBloat := root.CalculateTotalBloat()
+}
+
+func calculateTotalBloat(n *FSNode) int {
+	var totalBloat int
+	for _, x := range n.children {
+		size := x.GetSize()
+		if x.IsDir() && size < nonBloatedThreshold {
+			totalBloat += size
+		}
+		totalBloat += calculateTotalBloat(x)
+	}
 	return totalBloat
 }
 
-func Part2(input string) {}
+func findSmallestDirAboveThreshold(n *FSNode, s int, rootSize int) int {
+	for _, x := range n.children {
+		if !x.IsDir() {
+			continue
+		}
+		size := x.GetSize()
+		isBigEnough := (totalSystemSize-rootSize)+size >= minSpaceNeededForUpdate
+		if size < s && isBigEnough {
+			s = size
+			s = findSmallestDirAboveThreshold(x, s, rootSize)
+		}
+	}
+	return s
+}
