@@ -12,6 +12,7 @@ import (
 	day04 "github.com/johncalvinroberts/advent-of-code-2022/day/04"
 	day05 "github.com/johncalvinroberts/advent-of-code-2022/day/05"
 	day06 "github.com/johncalvinroberts/advent-of-code-2022/day/06"
+	day07 "github.com/johncalvinroberts/advent-of-code-2022/day/07"
 	"github.com/johncalvinroberts/advent-of-code-2022/utils"
 )
 
@@ -51,6 +52,9 @@ func (cmd *RunCmd) Run() error {
 	case 6:
 		fmt.Printf("part 1: %d\n", day06.Part1(utils.ReadDayFile(cmd.Day)))
 		fmt.Printf("part 2: %d\n", day06.Part2(utils.ReadDayFile(cmd.Day)))
+	case 7:
+		fmt.Printf("part 1: %d\n", day07.Part1(utils.ReadDayFile(cmd.Day)))
+		// fmt.Printf("part 2: %d\n", day06.Part2(utils.ReadDayFile(cmd.Day)))
 	}
 	return nil
 }
@@ -60,6 +64,7 @@ type ScaffoldCmd struct {
 }
 
 func (cmd *ScaffoldCmd) Run() error {
+	fmt.Printf("🧝‍♀️ scaffolding day %d\n", cmd.Day)
 	cookie := utils.ReadFile("cookie")
 	url := fmt.Sprintf("https://adventofcode.com/2022/day/%d/input", cmd.Day)
 	client := &http.Client{}
@@ -95,6 +100,7 @@ func TestPart2(t *testing.T) {}
 	utils.WriteFile(inputFile, data)
 	utils.WriteFile(chlgFile, []byte(chlgScaffold))
 	utils.WriteFile(testFile, []byte(testScaffold))
+	fmt.Println("🌲🌲好了！Done! ❄️❄️❄️❄️")
 	return nil
 }
 
