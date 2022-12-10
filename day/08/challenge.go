@@ -92,6 +92,87 @@ func Part1(input string) int {
 	return trees.countVisible()
 }
 
-// guessed: 7581, too high
+// find highest scenic score possible for any tree in the forest
+// scenic score = multiplying the viewing distance of all four directions
+func Part2(input string) int {
+	var (
+		rows   = utils.StrToSlice(input, "\n")
+		width  = len(rows[0])
+		height = len(rows)
+		grid   = make(Grid, height)
+		trees  = &Forest{
+			height: height,
+			width:  width,
+		}
+	)
+	for r, line := range rows {
+		grid[r] = make([]int, width)
+		for c, char := range line {
+			grid[r][c] = int(char - zero)
+		}
+	}
+	trees.grid = grid
 
-func Part2(input string) {}
+	calculateScenicScore := func(r, c int) int {
+		var (
+			left        = 0
+			right       = 0
+			top         = 0
+			bottom      = 0
+			rightFound  bool
+			leftFound   bool
+			topFound    bool
+			bottomFound bool
+			treeHeight  = trees.grid[r][c]
+		)
+
+		for i := 1; i < width; i++ {
+			nextLeftIdx := c - i
+			nextRightIdx := c + i
+			if nextLeftIdx >= 0 && !leftFound {
+				left++
+				nextLeft := trees.grid[r][nextLeftIdx]
+				if nextLeft >= treeHeight {
+					leftFound = true
+				}
+			}
+			if nextRightIdx < width && !rightFound {
+				right++
+				nextRight := trees.grid[r][nextRightIdx]
+				if nextRight >= treeHeight {
+					rightFound = true
+				}
+			}
+		}
+		for i := 1; i < height; i++ {
+			nextTopIdx := r - i
+			nextBottomIdx := r + i
+			if nextTopIdx >= 0 && !topFound {
+				top++
+				nextTop := trees.grid[nextTopIdx][c]
+				if nextTop >= treeHeight {
+					topFound = true
+				}
+			}
+			if nextBottomIdx < height && !bottomFound {
+				bottom++
+				nextBottom := trees.grid[nextBottomIdx][c]
+				if nextBottom >= treeHeight {
+					bottomFound = true
+				}
+			}
+		}
+		fmt.Printf("left: %d right: %d, top: %d, bottom %d\n", left, right, top, bottom)
+		return left * right * top * bottom
+	}
+	var maxScenicScore int
+	for r := 0; r < height; r++ {
+		for c := 0; c < width; c++ {
+			scenicScore := calculateScenicScore(r, c)
+			if scenicScore > maxScenicScore {
+				maxScenicScore = scenicScore
+			}
+		}
+	}
+	return maxScenicScore
+}
