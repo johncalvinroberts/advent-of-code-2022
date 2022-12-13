@@ -19,6 +19,12 @@ func StrToInt(s string, fallback int) int {
 	return v
 }
 
+func MustStrToInt(s string) int {
+	v, err := strconv.Atoi(s)
+	PanicOnErr(err)
+	return v
+}
+
 func StrSliceToIntSlice(strs []string) []int {
 	ints := make([]int, len(strs))
 	for in, v := range strs {

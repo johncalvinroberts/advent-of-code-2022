@@ -3,7 +3,7 @@ package utils
 import "fmt"
 
 type QueueNode[T comparable] struct {
-	value T
+	Value T
 	next  *QueueNode[T]
 }
 
@@ -14,7 +14,7 @@ type Queue[T comparable] struct {
 }
 
 func (q *Queue[T]) Enqueue(value T) {
-	n := &QueueNode[T]{value: value}
+	n := &QueueNode[T]{Value: value}
 	if q.length == 0 {
 		q.head = n
 	} else {
@@ -36,6 +36,10 @@ func (q *Queue[T]) Dequeue() *QueueNode[T] {
 	return ret
 }
 
-func (q *Queue[T]) Peek() T {
-	return q.head.value
+func (q *Queue[T]) Peek() *T {
+	return &q.head.Value
+}
+
+func (q *Queue[T]) IsEmpty() bool {
+	return q.length < 1
 }
