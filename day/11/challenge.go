@@ -20,17 +20,26 @@ type MonkeyState struct {
 // monkey business = product of number of items inspected by two most active monkeys
 // return the level of monkey business over twenty rounds
 func Part1(input string) int {
+	return watchMonkeysFiddleWithBackpackContents(20, 3, input)
+}
+
+// same as part 1, but no divide by three after each round, and do 10000 rounds
+func Part2(input string) int {
+	return watchMonkeysFiddleWithBackpackContents(10000, 1, input)
+}
+
+func watchMonkeysFiddleWithBackpackContents(rounds, worryDivisor int, input string) int {
 	var (
 		monkeys                    = parseMonkeyOperation(input)
 		mostInspectiveMonkey       int
 		secondMostInspectiveMonkey int
 	)
-	for i := 0; i < 20; i++ {
+	for i := 0; i < rounds; i++ {
 		for _, currentMonkey := range monkeys {
 			for !currentMonkey.Items.IsEmpty() {
 				v := currentMonkey.Items.Dequeue()
 				currentMonkey.InspectCount++
-				nextWorryLevel, ok := executeOperation(v.Value, currentMonkey)
+				nextWorryLevel, ok := executeOperation(v.Value, worryDivisor, currentMonkey)
 				if !ok {
 					monkeys[currentMonkey.FailMonkey].Items.Enqueue(nextWorryLevel)
 				} else {
@@ -38,6 +47,15 @@ func Part1(input string) int {
 				}
 			}
 		}
+		// if i == 0 || i == 19 || i == 999 {
+		// 	fmt.Println("")
+
+		// 	fmt.Printf("i: %d\n", i)
+		// 	for _, m := range monkeys {
+		// 		fmt.Println(m.InspectCount)
+		// 	}
+		// 	fmt.Println("")
+		// }
 	}
 
 	for _, m := range monkeys {
@@ -49,13 +67,8 @@ func Part1(input string) int {
 			secondMostInspectiveMonkey = m.InspectCount
 		}
 	}
-
-	fmt.Println(mostInspectiveMonkey, secondMostInspectiveMonkey)
-
 	return mostInspectiveMonkey * secondMostInspectiveMonkey
 }
-
-func Part2(input string) {}
 
 func parseMonkeyOperation(raw string) []*MonkeyState {
 	var (
@@ -91,7 +104,7 @@ func parseMonkeyOperation(raw string) []*MonkeyState {
 	return monkeys
 }
 
-func executeOperation(w int, m *MonkeyState) (int, bool) {
+func executeOperation(w, worryDivisor int, m *MonkeyState) (int, bool) {
 	var (
 		leftStr        string
 		rightStr       string
@@ -127,7 +140,7 @@ func executeOperation(w int, m *MonkeyState) (int, bool) {
 		nextWorryLevel = left / right
 	}
 	// this happens every time a monkey gets bored with an item
-	nextWorryLevel = nextWorryLevel / 3
+	nextWorryLevel = nextWorryLevel / worryDivisor
 	ok = nextWorryLevel%m.TestOperand == 0
 	return nextWorryLevel, ok
 }
