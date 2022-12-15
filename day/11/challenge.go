@@ -17,20 +17,25 @@ type MonkeyState struct {
 	InspectCount int
 }
 
+type PassOp func(int) int
+
 // monkey business = product of number of items inspected by two most active monkeys
 // return the level of monkey business over twenty rounds
 func Part1(input string) int {
-	return watchMonkeysFiddleWithBackpackContents(20, 3, input)
+	passOp := func(w int) int { return w / 3 }
+	monkeys, _ := parseMonkeyOperation(input)
+	return watchMonkeysFiddleWithBackpackContents(20, passOp, monkeys)
 }
 
 // same as part 1, but no divide by three after each round, and do 10000 rounds
 func Part2(input string) int {
-	return watchMonkeysFiddleWithBackpackContents(10000, 1, input)
+	monkeys, lcm := parseMonkeyOperation(input)
+	passOp := func(w int) int { return w % lcm }
+	return watchMonkeysFiddleWithBackpackContents(10000, passOp, monkeys)
 }
 
-func watchMonkeysFiddleWithBackpackContents(rounds, worryDivisor int, input string) int {
+func watchMonkeysFiddleWithBackpackContents(rounds int, passOp PassOp, monkeys []*MonkeyState) int {
 	var (
-		monkeys                    = parseMonkeyOperation(input)
 		mostInspectiveMonkey       int
 		secondMostInspectiveMonkey int
 	)
@@ -39,7 +44,7 @@ func watchMonkeysFiddleWithBackpackContents(rounds, worryDivisor int, input stri
 			for !currentMonkey.Items.IsEmpty() {
 				v := currentMonkey.Items.Dequeue()
 				currentMonkey.InspectCount++
-				nextWorryLevel, ok := executeOperation(v.Value, worryDivisor, currentMonkey)
+				nextWorryLevel, ok := executeOperation(v.Value, passOp, currentMonkey)
 				if !ok {
 					monkeys[currentMonkey.FailMonkey].Items.Enqueue(nextWorryLevel)
 				} else {
@@ -47,15 +52,6 @@ func watchMonkeysFiddleWithBackpackContents(rounds, worryDivisor int, input stri
 				}
 			}
 		}
-		// if i == 0 || i == 19 || i == 999 {
-		// 	fmt.Println("")
-
-		// 	fmt.Printf("i: %d\n", i)
-		// 	for _, m := range monkeys {
-		// 		fmt.Println(m.InspectCount)
-		// 	}
-		// 	fmt.Println("")
-		// }
 	}
 
 	for _, m := range monkeys {
@@ -70,10 +66,11 @@ func watchMonkeysFiddleWithBackpackContents(rounds, worryDivisor int, input stri
 	return mostInspectiveMonkey * secondMostInspectiveMonkey
 }
 
-func parseMonkeyOperation(raw string) []*MonkeyState {
+func parseMonkeyOperation(raw string) ([]*MonkeyState, int) {
 	var (
 		rawMonkeys = utils.StrToSlice(raw, "\n\n")
 		monkeys    = make([]*MonkeyState, len(rawMonkeys))
+		lcm        = 1
 	)
 	for i, monk := range rawMonkeys {
 		var (
@@ -100,11 +97,13 @@ func parseMonkeyOperation(raw string) []*MonkeyState {
 			TestOperand: test,
 		}
 		monkeys[i] = statefulMonk
+		// not sure why this makes it work, but it has to do with chinese remainder theorem
+		lcm *= test
 	}
-	return monkeys
+	return monkeys, lcm
 }
 
-func executeOperation(w, worryDivisor int, m *MonkeyState) (int, bool) {
+func executeOperation(w int, passOp PassOp, m *MonkeyState) (int, bool) {
 	var (
 		leftStr        string
 		rightStr       string
@@ -140,7 +139,7 @@ func executeOperation(w, worryDivisor int, m *MonkeyState) (int, bool) {
 		nextWorryLevel = left / right
 	}
 	// this happens every time a monkey gets bored with an item
-	nextWorryLevel = nextWorryLevel / worryDivisor
+	nextWorryLevel = passOp(nextWorryLevel)
 	ok = nextWorryLevel%m.TestOperand == 0
 	return nextWorryLevel, ok
 }
