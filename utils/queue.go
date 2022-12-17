@@ -2,26 +2,26 @@ package utils
 
 import "fmt"
 
-type QueueNode[T comparable] struct {
+type QueueNode[T any] struct {
 	Value T
 	next  *QueueNode[T]
 }
 
-type Queue[T comparable] struct {
-	length int
+type Queue[T any] struct {
+	Length int
 	head   *QueueNode[T]
 	tail   *QueueNode[T]
 }
 
 func (q *Queue[T]) Enqueue(value T) {
 	n := &QueueNode[T]{Value: value}
-	if q.length == 0 {
+	if q.Length == 0 {
 		q.head = n
 	} else {
 		q.tail.next = n
 	}
 	q.tail = n
-	q.length++
+	q.Length++
 }
 
 func (q *Queue[T]) Dequeue() *QueueNode[T] {
@@ -29,7 +29,7 @@ func (q *Queue[T]) Dequeue() *QueueNode[T] {
 	if q.head != nil {
 		ret = q.head
 		q.head = ret.next
-		q.length--
+		q.Length--
 	} else {
 		fmt.Println("The queue is empty.")
 	}
@@ -41,5 +41,5 @@ func (q *Queue[T]) Peek() *T {
 }
 
 func (q *Queue[T]) IsEmpty() bool {
-	return q.length < 1
+	return q.Length < 1
 }

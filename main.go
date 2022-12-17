@@ -17,6 +17,7 @@ import (
 	day09 "github.com/johncalvinroberts/advent-of-code-2022/day/09"
 	day10 "github.com/johncalvinroberts/advent-of-code-2022/day/10"
 	day11 "github.com/johncalvinroberts/advent-of-code-2022/day/11"
+	day12 "github.com/johncalvinroberts/advent-of-code-2022/day/12"
 	"github.com/johncalvinroberts/advent-of-code-2022/utils"
 )
 
@@ -71,6 +72,9 @@ func (cmd *RunCmd) Run() error {
 	case 11:
 		fmt.Printf("part 1: %d\n", day11.Part1(utils.ReadDayFile(cmd.Day)))
 		fmt.Printf("part 2: \n%d\n", day11.Part2(utils.ReadDayFile(cmd.Day)))
+	case 12:
+		fmt.Printf("part 1: %d\n", day12.Part1(utils.ReadDayFile(cmd.Day)))
+		// fmt.Printf("part 2: \n%d\n", day11.Part2(utils.ReadDayFile(cmd.Day)))
 	}
 	return nil
 }
